@@ -1,5 +1,20 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mysql = require('mysql2/promise');
+
+// mysql connection
+const connection = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: '1234',
+    database: 'database',
+    connectTimeout: 5000,
+    connectionLimit: 30
+})
+
+const getConn = async () => {
+    return await connection.getConnection(async (conn) => conn);
+}
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
@@ -25,4 +40,13 @@ app.get('/write', function (req, res){
 app.post('/add', function (req, res) {
     res.send('전송 완료');
     console.log(req.body.title)
+})
+
+app.get('/apiTest', async (req, res) => {
+    const conn = await getConn();
+    const query = 'SELECT * FROM TEST';
+    let [rows, fields] =  await conn.query(query, []);
+    conn.release();
+
+    res.send(rows);
 })
