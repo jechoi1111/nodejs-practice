@@ -50,3 +50,17 @@ app.get('/apiTest', async (req, res) => {
 
     res.send(rows);
 })
+
+app.post('/postApiTest', async (req, res) => {
+    const conn = await getConn();
+    const query = 'INSERT INTO TEST(ID, PASSWORD) VALUES (?, ?)';
+    const values = ["2", "1234"]
+
+    await conn.query(query, values, (error, res) => {
+        if (error) throw error;
+    })
+
+    console.log('데이터 insert 완료');
+
+    conn.release();
+})
